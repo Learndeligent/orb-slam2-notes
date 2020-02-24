@@ -14,3 +14,8 @@ ORB-SLAM是一个基于特征点的实时单目SLAM系统，在大规模的、�
 （2）局部建图：这一部分主要完成局部地图构建。包括对关键帧的插入，验证最近生成的地图点并进行筛选，然后生成新的地图点，使用局部捆集调整（Local BA），最后再对插入的关键帧进行筛选，去除多余的关键帧；
 （3）闭环检测：这一部分主要分为两个过程，分别是闭环探测和闭环校正。闭环检测先使用WOB进行探测，然后通过Sim3算法计算相似变换。闭环校正，主要是闭环融合和Essential Graph的图优化。
 
+
+reference:
+1. http://webdiis.unizar.es/~raulmur/orbslam/
+2. Raúl Mur-Artal, and Juan D. Tardós. ORB-SLAM2: an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras. ArXiv preprint arXiv:1610.06475, 2016 
+
