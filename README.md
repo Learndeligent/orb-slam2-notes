@@ -10,7 +10,7 @@ ORB-SLAM是一个基于特征点的实时单目SLAM系统，在大规模的、�
 
 ## 2. System Framework 
 整个SLAM系统主要包括跟踪（Tracking）、局部建图（Local Mapping）和闭环检测（LoopClosing）等，在这之前，还有初始化SLAM系统的过程（System），这也构成了SLAM系统的主要的线程：
-![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/Framework.jpg)
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/Framework.png)
 （1）跟踪：提取ORB特征，根据上一帧进行姿态估计，或者通过全局重定位初始化位姿，然后跟踪已经生成的局部地图来优化位姿，然后通过一些规则来选择是否生成关键帧；
 （2）局部建图：这一部分主要完成局部地图构建。包括对关键帧的插入，验证最近生成的地图点并进行筛选，然后生成新的地图点，使用局部捆集调整（Local BA），最后再对插入的关键帧进行筛选，去除多余的关键帧；
 （3）闭环检测：这一部分主要分为两个过程，分别是闭环探测和闭环校正。闭环检测先使用WOB进行探测，然后通过Sim3算法计算相似变换。闭环校正，主要是闭环融合和Essential Graph的图优化。
@@ -21,13 +21,15 @@ At the begining of notes, it's important to figure out the logistic of the whole
 
 ## 1. The pipeline of mono_tum
 main程序里还是很简单易懂的，这里重要的是system部分初始化以及跟踪（TrackMonocular）两个步骤。
-
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/mono_tum.png)
 
 ## 2. The Initialization of SLAM System
 这里主要是对SLAM系统内部的一些类进行初始化，这里主要包括地图、闭环检测和可视化窗口；
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/SLAM_ini.png)
 
 ## 3. TrackMonocular 
 这里主要是构造FRAME的过程，这部分的代码主要在Frame.cpp中，参数中的差异项为ORBextractor，两者提取特征的数量不一致；在FRAME构建完成之后，就可以根据FRAME来跟踪了，即主线程Track，这里的Track分为两个方向，初始化和跟踪。下节会介绍初始化，之后会正式讲解跟踪！
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/TrackMonocular.png)
 
 reference:
 1. http://webdiis.unizar.es/~raulmur/orbslam/
