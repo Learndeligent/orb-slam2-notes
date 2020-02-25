@@ -17,7 +17,17 @@ ORB-SLAM是一个基于特征点的实时单目SLAM系统，在大规模的、�
 
 # orb-slam2 notes <2>
 
-At the begining of notes, it's important to figure out the logistic of the whole system, so i arrange 
+At the begining of notes, it's important to figure out the logistic of the whole system, so i arrange the mind map of mono_tum.cc as below:
+
+## 1. The pipeline of mono_tum
+main程序里还是很简单易懂的，这里重要的是system部分初始化以及跟踪（TrackMonocular）两个步骤。
+
+
+## 2. The Initialization of SLAM System
+这里主要是对SLAM系统内部的一些类进行初始化，这里主要包括地图、闭环检测和可视化窗口；
+
+## 3. TrackMonocular 
+这里主要是构造FRAME的过程，这部分的代码主要在Frame.cpp中，参数中的差异项为ORBextractor，两者提取特征的数量不一致；在FRAME构建完成之后，就可以根据FRAME来跟踪了，即主线程Track，这里的Track分为两个方向，初始化和跟踪。下节会介绍初始化，之后会正式讲解跟踪！
 
 reference:
 1. http://webdiis.unizar.es/~raulmur/orbslam/
