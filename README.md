@@ -10,7 +10,7 @@ ORB-SLAM是一个基于特征点的实时单目SLAM系统，在大规模的、�
 
 ## 2. System Framework 
 整个SLAM系统主要包括跟踪（Tracking）、局部建图（Local Mapping）和闭环检测（LoopClosing）等，在这之前，还有初始化SLAM系统的过程（System），这也构成了SLAM系统的主要的线程：
-![Framework of ORB_SLAM2](https://github.com/Learndeligent/orb-slam2-notes/blob/master/Framework.jpg)
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/Framework.jpg)
 （1）跟踪：提取ORB特征，根据上一帧进行姿态估计，或者通过全局重定位初始化位姿，然后跟踪已经生成的局部地图来优化位姿，然后通过一些规则来选择是否生成关键帧；
 （2）局部建图：这一部分主要完成局部地图构建。包括对关键帧的插入，验证最近生成的地图点并进行筛选，然后生成新的地图点，使用局部捆集调整（Local BA），最后再对插入的关键帧进行筛选，去除多余的关键帧；
 （3）闭环检测：这一部分主要分为两个过程，分别是闭环探测和闭环校正。闭环检测先使用WOB进行探测，然后通过Sim3算法计算相似变换。闭环校正，主要是闭环融合和Essential Graph的图优化。
