@@ -1,4 +1,4 @@
-# orb-slam2 notes <1>
+# orb-slam2 notes <1> Overview
 
 Hi,all! This is my first github blog, and here are some notes after reading orb-slam2 source code.
 
@@ -15,7 +15,7 @@ ORB-SLAM是一个基于特征点的实时单目SLAM系统，在大规模的、�
 （2）局部建图：这一部分主要完成局部地图构建。包括对关键帧的插入，验证最近生成的地图点并进行筛选，然后生成新的地图点，使用局部捆集调整（Local BA），最后再对插入的关键帧进行筛选，去除多余的关键帧；
 （3）闭环检测：这一部分主要分为两个过程，分别是闭环探测和闭环校正。闭环检测先使用WOB进行探测，然后通过Sim3算法计算相似变换。闭环校正，主要是闭环融合和Essential Graph的图优化。
 
-# orb-slam2 notes <2>
+# orb-slam2 notes <2> Pipeline of system
 
 At the begining of notes, it's important to figure out the logistic of the whole system, so i arrange the mind map of mono_tum.cc as below:
 
@@ -30,6 +30,22 @@ main程序里还是很简单易懂的，这里重要的是system部分初始化�
 ## 3. TrackMonocular 
 这里主要是构造FRAME的过程，这部分的代码主要在Frame.cpp中，参数中的差异项为ORBextractor，两者提取特征的数量不一致；在FRAME构建完成之后，就可以根据FRAME来跟踪了，即主线程Track，这里的Track分为两个方向，初始化和跟踪。下节会介绍初始化，之后会正式讲解跟踪！
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/TrackMonocular.png)
+
+
+# orb-slam2 notes <3> Initialization
+
+this part is about Monocular initialization and the code can be found in Tracking::MonocularInitialization
+
+## 1. The pipeline of monocular initialization
+单目初始化的程序逻辑主要如下图所示，这里需要注意的是orb-slam2对于初始化的要求还是比较高的
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/MonocularInitialization.png)
+
+## 2. How to solve H, F, R and t?
+这里的内容主要是一些理论知识，可以参考Multiview geometry这本书，代码中也会多次引用该书本上的知识：这里的重点在于掌握求H和F的方法，以及如何通过H和F来reconstruct出motion，即R和t
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/SolveHandF.png)
+
+## 3. Create Initial Map
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/CreateInitialMapMonocular.png)
 
 reference:
 1. http://webdiis.unizar.es/~raulmur/orbslam/
