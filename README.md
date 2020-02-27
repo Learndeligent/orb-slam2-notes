@@ -60,7 +60,7 @@ After initialization, the thread of tracking can be working which consist of thr
 
 ## 2. Track Local Map
 主要有三部分：1、更新局部地图点和局部地图关键帧；2、在所有的局部地图点中查找和当前帧的匹配点；3、优化位姿，判断跟踪局部地图是否成功；
-![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/TrackLocalMappng)
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/TrackLocalMap.png)
 
 ## 3. Create New Keyframe
 
