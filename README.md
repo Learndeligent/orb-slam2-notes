@@ -65,6 +65,22 @@ After initialization, the thread of tracking can be working which consist of thr
 ## 3. Create New Keyframe
 
 
+# orb-slam2 notes <5> Build Local Map
+
+The task of this thred is to insert new keyframe, update map points and key frame, and local BA
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/LocalMapping().png)
+
+## 1. Insert New KeyFrame
+关键帧插入的流程是先从缓冲队列中取出关键帧，然后计算该关键帧特征点的BoW，然后给当前关键帧和那些局部地图与其匹配上的MapPoints设置关联，然后更新Covisibility Graph，即更新当前关键帧与其他关键帧的连接关系，然后将该关键帧插入地图
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/ProcessNewKeyFrame.png)
+
+## 2、Local BA
+这里需要注意的优化的对象包括两个：一是与当前关键帧相连的关键帧，二是上述关键帧相连的地图点，即CreateNewMapPoints()中生成的MapPoints；
+
+## 3、局部关键帧剔除和局部地图点剔除
+因为每一步都会有冗余的关键帧需要剔除，这就导致有一些地图点的情况也随之改变，所以这两者是相应进行的；除此之外，局部地图点筛选的对象是最近添加的点。
+
+
 reference:
 1. http://webdiis.unizar.es/~raulmur/orbslam/
 2. Raúl Mur-Artal, and Juan D. Tardós. ORB-SLAM2: an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras. ArXiv preprint arXiv:1610.06475, 2016 
