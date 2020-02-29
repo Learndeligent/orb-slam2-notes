@@ -55,15 +55,15 @@ this part is about Monocular initialization and the code can be found in Trackin
 After initialization, the thread of tracking can be working which consist of three parts as belows:
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/Track().png)
 
-    ## 1. Estimation of Camera Pose
+## 1. Estimation of Camera Pose
 这里主要有三种方法：基于匀速模型，指的是前面两帧可以求出一个速度，假设速度是恒定的，那就可以根据上一帧的姿态和运动速度来求得当前帧的姿态，然后通过上一帧的MapPoints的投影点来缩小匹配的区域，从而来加速匹配，这也考虑到实际上相机的载体可能是匀速前进的；实际代码中若匹配点数量过少，会扩大搜索的区域；基于关键帧，当速度为空或者通过匀速模型求出来的匹配点过少时，则采用基于关键帧的位姿估计，这里采用的关键帧就是上一帧关键帧，通过BoW来加速匹配，特征点的匹配关系通过MapPoints来进行维护，优化的初值为上一帧的位姿；基于重定位，只有在上述两个方法track(匹配)的效果都太差时，Relocalization才出手，与“基于关键帧”的处理方式相像，只不过是在整个关键帧数据库里面去找和当前帧BoW接近的关键帧，然后依次对它们遍历，直到找到内点数量较多的关键帧；
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/Ini_Tcw_3model.png)
 
-    ## 2. Track Local Map
+## 2. Track Local Map
 主要有三部分：1、更新局部地图点和局部地图关键帧；2、在所有的局部地图点中查找和当前帧的匹配点；3、优化位姿，判断跟踪局部地图是否成功；
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/TrackLocalMap.png)
 
-    ## 3. Create New Keyframe
+## 3. Create New Keyframe
 
 
 # orb-slam2 notes <5> Build Local Map
@@ -71,22 +71,32 @@ After initialization, the thread of tracking can be working which consist of thr
 The task of this thred is to insert new keyframe, update map points and key frame, and local BA
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/LocalMapping().png)
 
-    ## 1. Insert New KeyFrame
+## 1. Insert New KeyFrame
 关键帧插入的流程是先从缓冲队列中取出关键帧，然后计算该关键帧特征点的BoW，然后给当前关键帧和那些局部地图与其匹配上的MapPoints设置关联，然后更新Covisibility Graph，即更新当前关键帧与其他关键帧的连接关系，然后将该关键帧插入地图
 ![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/ProcessNewKeyFrame.png)
 
-    ## 2、Local BA
+## 2、Local BA
 这里需要注意的优化的对象包括两个：一是与当前关键帧相连的关键帧，二是上述关键帧相连的地图点，即CreateNewMapPoints()中生成的MapPoints；
 
-    ## 3、局部关键帧剔除和局部地图点剔除
+## 3、局部关键帧剔除和局部地图点剔除
 因为每一步都会有冗余的关键帧需要剔除，这就导致有一些地图点的情况也随之改变，所以这两者是相应进行的；除此之外，局部地图点筛选的对象是最近添加的点。
 
 # orb-slam2 notes <6> Loop Closing
 
 It's important to introduce LoopClosing into slam system for the consideration of accumulative error, the structure of Loop Closing of orb-slam is as below:
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/LoopClosing.png)
 
-## 1. Detect Loop 
 
+## 1. Detect Loop
+检测是否存在回环。这里的思路主要是首先计算出一个minscore，这个minscore是当前关键帧与其相连的共视关键帧的最低相似度；基于这个minscore，在所有的关键帧（除了与其相连的共视关键帧）里面去搜索BoW相似程度在minscore以上的那些关键帧，当然这里对闭环候选帧的筛选还有好几步，包括单词树和连续性，最后会生成一系列闭环候选关键帧mvpEnoughConsistentCandidates.
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/DetectLoop().png)
+
+## 2. Compute Sim3
+在选出闭环候选关键帧后，就需要计算这些候选帧与当前关键帧之间的位置关系，这里采用Sim3求解。遍历每一关键帧，进行Sim3求解，Sim3求解之后，通过SearchBySim3可以找到更多的匹配点，之后还会通过与其相连的共视帧的MapPoints，进行SearchByProjection可以寻求更多的投影关系，这里共有三次匹配。
+![Image text](https://github.com/Learndeligent/orb-slam2-notes/blob/master/images/Sim3().png)
+
+## 3. Correct Loop
+闭环校正。这里在求出当前关键帧与其闭环关键帧的相对位姿关系时，首先根据传播得到与当前关键帧相连的关键帧的Sim3，然后基于此调整当前关键帧的MapPoints，然后才会真正地调整位姿，最后会优化Essential Graph，进行全局BA。
 
 reference:
 1. http://webdiis.unizar.es/~raulmur/orbslam/
